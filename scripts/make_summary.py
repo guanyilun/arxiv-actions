@@ -1,6 +1,7 @@
 """Create a markdown summary of an article"""
 import json
-import os, os.path as op
+import os.path as op
+from datetime import datetime
 
 from crawl import get_past_sunday
 
@@ -45,7 +46,7 @@ def make_summary(
     ofile = f"{output_dir}/latest.md"
     with open(ofile, "w") as f:
         f.write("---\n")
-        f.write("title: {{ date | date('YYYY-MM-DD') }} " + f"{category}\n")
+        f.write(f"title: {datetime.now().strftime('%Y-%m-%d')} {category}\n")
         f.write(f"labels: {category}, daily\n")
         f.write("---\n\n")
 
