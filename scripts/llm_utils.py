@@ -1,5 +1,6 @@
 from openai import OpenAI
 
+
 class OpenAIClient:
     def __init__(self):
         self.client = OpenAI()
@@ -12,7 +13,6 @@ class OpenAIClient:
         response = completion.choices[0].message.content
         return response
 
-        
 class ArxivAgent:
     def __init__(self, model=None):
         self.client = OpenAIClient()
