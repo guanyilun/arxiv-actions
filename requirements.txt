@@ -1,3 +1,4 @@
 arxiv==2.1.0
 boto3
 python-dotenv
+openai
