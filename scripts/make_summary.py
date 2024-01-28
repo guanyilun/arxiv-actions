@@ -15,13 +15,9 @@ def article_md(article, keywords="", tldr=""):
     ] 
     + ([] if not keywords else [f'**Keywords**: {keywords}',''])
     + ([] if not tldr else [f'**TL;DR**: {tldr}', ''])
-    + [f'**Link**: [arXiv](https://arxiv.org/abs/{article["id"]})','']
-    + [
-        '#### Abstract:',
-        f'{article["abstract"]}',
-        '',
-        '</details>'
-    ])
+    + [f'**Link**: [arXiv](https://arxiv.org/abs/{article["id"]})']
+    + ['</details>', '','']
+    )
 
 def make_summary(
     category="astro-ph.CO",
@@ -53,10 +49,6 @@ def make_summary(
         for article in articles:
             tldr = [tldr['tldr'] for tldr in tldrs if tldr['id'] == article['id']]
             if tldr: tldr = tldr[0]
-
-            # minor clean-ups
-            article['abstract'] = article['abstract'].replace("\n", " ")
-
             f.write(article_md(article, tldr=tldr))
 
 if __name__ == "__main__":
