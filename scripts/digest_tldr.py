@@ -57,10 +57,13 @@ def digest_tldr(
     new_tldrs = []
     for article in articles:
         if article['id'] in tldr_ids: continue
+            # new_tldrs.append({
+            #     'id': article['id'],
+            #     'tldr': tldrs[tldr_ids.index(article['id'])]['tldr']
+            # }) 
         logging.info(f"generating tl;dr for {article['id']}")
         abstract = article['abstract'].replace("\n", " ")
         tldr = agent.tldr(abstract)
-        
         new_tldrs.append({
             'id': article['id'],
             'tldr': tldr
@@ -74,13 +77,13 @@ def digest_tldr(
     b2.upload(curr_file, curr_uri)
 
     # also store the latest for further processing
-    if len(new_tldrs) > 0:
-        latest_uri = f"tldr/{catname}/latest.json"
-        latest_file = op.join(output_dir, latest_uri)
-        with open(latest_file, "w") as f:
-            json.dump(new_tldrs, f)
-        logging.info(f"uploading {latest_file} to remote")
-        b2.upload(latest_file, latest_uri)
+    # if len(new_tldrs) > 0:
+    #     latest_uri = f"tldr/{catname}/latest.json"
+    #     latest_file = op.join(output_dir, latest_uri)
+    #     with open(latest_file, "w") as f:
+    #         json.dump(new_tldrs, f)
+    #     logging.info(f"uploading {latest_file} to remote")
+    #     b2.upload(latest_file, latest_uri)
 
     logging.info("Done")
 

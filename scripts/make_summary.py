@@ -1,5 +1,8 @@
 """Create a markdown summary of an article"""
 import json
+import os, os.path as op
+
+from crawl import get_past_sunday
 
 def article_md(article, keywords="", tldr=""):
     return "\n".join([
@@ -27,9 +30,17 @@ def make_summary(
     latest_file = f"{output_dir}/metadata/{catname}/latest.json"
     with open(latest_file, "r") as f:
         articles = json.load(f)
-    latest_tldr = f"{output_dir}/tldr/{catname}/latest.json"
-    with open(latest_tldr, "r") as f:
-        tldrs = json.load(f)
+    curr = get_past_sunday(1)
+    past = get_past_sunday(2)
+    curr_uri = f"tldr/{catname}/{curr.strftime('%Y-%m-%d')}.json"
+    past_uri = f"tldr/{catname}/{past.strftime('%Y-%m-%d')}.json"
+    curr_file = f"{output_dir}/{curr_uri}"
+    past_file = f"{output_dir}/{past_uri}"
+    tldrs = []
+    for fname in [curr_file, past_file]:
+        if op.exists(fname):
+            with open(fname, "r") as f:
+                tldrs += json.load(f)
 
     ofile = f"{output_dir}/latest.md"
     with open(ofile, "w") as f:
