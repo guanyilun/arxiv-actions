@@ -74,12 +74,13 @@ def digest_tldr(
     b2.upload(curr_file, curr_uri)
 
     # also store the latest for further processing
-    latest_uri = f"tldr/{catname}/latest.json"
-    latest_file = op.join(output_dir, latest_uri)
-    with open(latest_file, "w") as f:
-        json.dump(new_tldrs, f)
-    logging.info(f"uploading {latest_file} to remote")
-    b2.upload(latest_file, latest_uri)
+    if len(new_tldrs) > 0:
+        latest_uri = f"tldr/{catname}/latest.json"
+        latest_file = op.join(output_dir, latest_uri)
+        with open(latest_file, "w") as f:
+            json.dump(new_tldrs, f)
+        logging.info(f"uploading {latest_file} to remote")
+        b2.upload(latest_file, latest_uri)
 
     logging.info("Done")
 
