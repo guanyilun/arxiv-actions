@@ -2,13 +2,11 @@ name: 'arxiv-daily'
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
   schedule:
     - cron: '30 3 * * *'
 
 jobs:
-  arxiv-daily:
+  arxiv-digest:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -30,3 +28,17 @@ jobs:
           TZ: 'America/New_York'
         run: |
           python scripts/crawl.py
+      - name: tldr digestion and make summary
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python scripts/digest_tldr.py
+      - name: make markdown summary
+        run: |
+          python scripts/make_summary.py
+      - name: create issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          filename: data/summary.md

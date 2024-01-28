@@ -9,9 +9,7 @@ import logging
 from dotenv import load_dotenv
 
 import arxiv
-import boto3
-from botocore.config import Config
-from botocore.exceptions import ClientError
+from data_utils import B2Resource
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
@@ -87,50 +85,32 @@ def arxiv_ingest_metadata(
         return
 
     logging.info(f"Writing to {curr_file}")
-    with open(curr_file, "a") as f:
-        json.dump(entries, f)
+    # be careful not to overwrite existing entries
+    # directly appending doesn't work because json format
+    # may become invalid
+    if op.exists(curr_file):
+        with open(curr_file, "r") as f:
+            curr_entries = json.load(f)
+        curr_entries += entries
+    else:
+        curr_entries = entries
+    with open(curr_file, "w") as f:
+        json.dump(curr_entries, f)
 
     # upload to b2
     logging.info(f"Uploading {curr_file} to remote")
     b2.upload(curr_file, curr_uri)
 
-    # also write to a local file for subsequent processing
+    # also write the latest updates for subsequent processing
     latest_file = op.join(odir, "latest.json")
     logging.info(f"Writing to {latest_file}")
     with open(latest_file, "w") as f:
         json.dump(entries, f)
+    logging.info(f"Uploading {latest_file} to remote")
+    latest_uri = f"metadata/{catname}/latest.json"
+    b2.upload(latest_file, latest_uri)
 
     logging.info("Done")
-
-# ----------------------------
-# data service wrapper
-# ----------------------------
-
-class B2Resource:
-    def __init__(self):
-        endpoint = os.getenv("ENDPOINT")
-        key_id = os.getenv("KEY_ID")
-        application_key = os.getenv("APPLICATION_KEY")
-        self.bucket_name = os.getenv("BUCKET_NAME")
-        self.b2 = boto3.resource(
-            service_name='s3',
-            endpoint_url=endpoint,
-            aws_access_key_id=key_id,
-            aws_secret_access_key=application_key,
-            config=Config(signature_version='s3v4')
-        )
-
-    def upload(self, local_path, remote_path):
-        try:
-            self.b2.Bucket(self.bucket_name).upload_file(local_path, remote_path)
-        except ClientError as ce:
-            logging.error(ce)
-    
-    def download(self, remote_path, local_path):
-        try:
-            self.b2.Bucket(self.bucket_name).download_file(remote_path, local_path)
-        except ClientError as ce:
-            logging.error(ce)
 
 # ----------------------------
 # utility functions
@@ -147,6 +127,8 @@ def arxiv_url_to_id_and_ver(url):
 
 def get_past_sunday(n=1):
     curr = datetime.datetime.now()
+    if curr.weekday() == 6:
+        return curr
     while n > 0:
         sunday = curr - datetime.timedelta(days=curr.weekday()+1)
         curr = sunday 
