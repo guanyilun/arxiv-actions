@@ -16,7 +16,7 @@ class OpenAIClient:
 class ArxivAgent:
     def __init__(self, model=None):
         self.client = OpenAIClient()
-        self.model = model or "gpt-3.5-turbo-1106"
+        self.model = model or "gpt-4-0125-preview"
 
     def tldr(self, abstract):
         prompt = '\n'.join([
