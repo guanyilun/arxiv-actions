@@ -127,7 +127,9 @@ def arxiv_url_to_id_and_ver(url):
 
 def get_past_sunday(n=1):
     curr = datetime.datetime.now()
-    if curr.weekday() == 6:
+    # if we are on a sunday and try to get the past sunday
+    # here is my definition, past sunday = today in this case
+    if n == 1 and curr.weekday() == 6:
         return curr
     while n > 0:
         sunday = curr - datetime.timedelta(days=curr.weekday()+1)
