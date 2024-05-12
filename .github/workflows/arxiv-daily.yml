@@ -35,6 +35,7 @@ jobs:
           APPLICATION_KEY: ${{ secrets.APPLICATION_KEY }}
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
           TZ: 'America/New_York'
         run: |
           python scripts/digest_tldr.py
