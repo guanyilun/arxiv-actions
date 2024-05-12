@@ -76,8 +76,8 @@ def digest_tldr(
 
 if __name__ == "__main__":
     load_dotenv()
-
-    agent = ArxivAgent()
+    model = os.environ.get("LLM_MODEL", None)
+    agent = ArxivAgent(model=model)
     b2 = B2Resource()
 
     for cat in CATEGORIES:

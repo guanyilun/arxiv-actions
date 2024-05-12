@@ -5,7 +5,7 @@ class OpenAIClient:
     def __init__(self):
         self.client = OpenAI()
 
-    def get_response(self, prompt, model="gpt-4-0125-preview"):
+    def get_response(self, prompt, model="gpt-4-turbo"):
         completion = self.client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
             model=model, 
@@ -16,7 +16,7 @@ class OpenAIClient:
 class ArxivAgent:
     def __init__(self, model=None):
         self.client = OpenAIClient()
-        self.model = model or "gpt-4-0125-preview"
+        self.model = model or "gpt-4-turbo"
 
     def tldr(self, abstract):
         prompt = '\n'.join([
