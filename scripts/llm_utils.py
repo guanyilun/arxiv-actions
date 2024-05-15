@@ -1,9 +1,11 @@
-from openai import OpenAI
+from groq import Groq
 
 
 class OpenAIClient:
     def __init__(self):
-        self.client = OpenAI()
+        self.client = Groq(
+            api_key=os.environ.get("OPENAI_API_KEY")
+        )
 
     def get_response(self, prompt, model="gpt-4-turbo"):
         completion = self.client.chat.completions.create(
