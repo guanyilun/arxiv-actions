@@ -1,4 +1,5 @@
 from groq import Groq
+import os
 
 
 class OpenAIClient:
